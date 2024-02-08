@@ -1,0 +1,18 @@
+import findspark
+findspark.init('/usr/local/spark')
+import pyspark
+
+from pyspark.sql import SparkSession
+spark = SparkSession.builder.appName("Python Spark SQL example").getOrCreate()
+
+from pyspark.sql import Row
+
+sc = spark.sparkContext 
+
+rdd = sc.textFile("NYSE_daily")
+
+header = rdd.first()
+data_rdd = rdd.filter(lambda line: line != header).map(lambda line: line.split('\t'))
+df = data_rdd.toDF(header.split('\t')) 
+
+df.printSchema()
